@@ -34,6 +34,7 @@ export type Item = {
   rarity: number;
   value: number;
   price?: number;
+  currencyType?: CurrencyType;
   effects: Record<string, any>;
   stats?: Record<string, number>;
   createdAt: Date;
@@ -90,7 +91,7 @@ export type ChatMessage = {
   username: string;
   content: string;
   timestamp: Date;
-  type: MessageType;
+  messageType: MessageType;
 };
 
 export enum ChatChannel {
@@ -143,7 +144,7 @@ export type BattleResult = {
     amount: number;
   }>;
   experienceGained: number;
-  completedAt: Date;
+  completedAt?: Date;
 }
 
 export type PlayerBattleRequest = {
