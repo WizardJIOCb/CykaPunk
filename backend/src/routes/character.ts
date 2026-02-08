@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { Character } from '../../../shared/types';
+import { Character } from '../shared/types';
 
 const router = express.Router();
 

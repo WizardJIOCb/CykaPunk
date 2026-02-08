@@ -1,7 +1,7 @@
 import { db } from '../db/connection';
 import { inventory, items, users, characters } from '../db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import { InventoryItem, Item } from '../../../shared/types';
+import { InventoryItem, Item } from '../shared/types';
 
 export class InventoryService {
   /**

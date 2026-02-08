@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { Item, ItemType, CurrencyType, EquipmentSlot } from '../../../shared/types';
+import { Item, ItemType, CurrencyType, EquipmentSlot } from '../shared/types';
 
 const router = express.Router();
 

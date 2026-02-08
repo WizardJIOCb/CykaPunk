@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { authenticateToken } from '../middleware/auth';
-import { ChatMessage, ChatChannel, OnlinePlayer, PlayerBattleRequest, BattleMode, MessageType } from '../../../shared/types';
+import { ChatMessage, ChatChannel, OnlinePlayer, PlayerBattleRequest, BattleMode, MessageType } from '../shared/types';
 
 // In-memory storage for online players (in production, use Redis)
 let onlinePlayers: OnlinePlayer[] = [];

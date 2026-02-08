@@ -1,7 +1,7 @@
 import { db } from '../db/connection';
 import { characters, users, inventory } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
-import { Character } from '../../../shared/types';
+import { Character } from '../shared/types';
 
 export class CharacterService {
   /**

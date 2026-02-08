@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { Battle, BattleMode, BattleResult, CurrencyType } from '../../../shared/types';
+import { Battle, BattleMode, BattleResult, CurrencyType } from '../shared/types';
 
 const router = express.Router();
 

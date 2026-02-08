@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { eq } from 'drizzle-orm';
 
-import { User } from '../../../shared/types';
+import { User } from '../shared/types';
 import { db } from '../db/connection';
 import { users } from '../db/schema';
 

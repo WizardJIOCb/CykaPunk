@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { ChatMessage, ChatChannel, MessageType, OnlinePlayer } from '../../../shared/types';
+import { ChatMessage, ChatChannel, MessageType, OnlinePlayer } from '../shared/types';
 
 const router = express.Router();
 

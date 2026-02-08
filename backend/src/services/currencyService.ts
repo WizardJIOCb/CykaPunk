@@ -1,25 +1,25 @@
 import { db } from '../db/connection';
 import { currencies, users, characters } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { Currency, CurrencyType } from '../../../shared/types';
+import { Currency, CurrencyType } from '../shared/types';
 
 export class CurrencyService {
   /**
    * Get user's currencies
    */
-  static async getCurrencies(userId: number): Promise<Currency> {
+  static async getCurrencies(userId: string): Promise<Currency> {
     try {
       const result = await db
         .select()
         .from(currencies)
-        .where(eq(currencies.userId, userId));
+        .where(eq(currencies.userId, userId.toString()));
 
       if (result.length === 0) {
         // Create default currencies if user doesn't have any
         const [newCurrency] = await db
           .insert(currencies)
           .values({
-            userId,
+            userId: userId.toString(),
             softCurrency: 100, // Starting amount
             hardCurrency: 0,
             upgradeCurrency: 0
@@ -62,7 +62,7 @@ export class CurrencyService {
           upgradeCurrency: updates.upgradeCurrency !== undefined ? updates.upgradeCurrency : sql<number>`currencies.upgrade_currency`,
           updatedAt: new Date()
         })
-        .where(eq(currencies.userId, userId))
+        .where(eq(currencies.userId, userId.toString()))
         .returning();
 
       return {
@@ -84,7 +84,7 @@ export class CurrencyService {
   static async addCurrency(userId: number, currencyType: CurrencyType, amount: number): Promise<Currency> {
     try {
       // Fetch current currencies
-      const currentCurrencies = await this.getCurrencies(userId);
+      const currentCurrencies = await this.getCurrencies(userId.toString());
       
       // Calculate new amounts
       let newSoft = currentCurrencies.softCurrency;
@@ -118,9 +118,9 @@ export class CurrencyService {
   /**
    * Spend a specific currency type
    */
-  static async spendCurrency(userId: number, currencyType: CurrencyType, amount: number): Promise<boolean> {
+  static async spendCurrency(userId: string, currencyType: CurrencyType, amount: number): Promise<boolean> {
     try {
-      const currentCurrencies = await this.getCurrencies(userId);
+      const currentCurrencies = await this.getCurrencies(userId.toString());
 
       let canSpend = false;
       switch (currencyType) {
@@ -217,7 +217,7 @@ export class CurrencyService {
           hardCurrency: senderHard,
           upgradeCurrency: senderUpgrade,
           updatedAt: new Date()
-        }).where(eq(currencies.userId, fromUserId));
+        }).where(eq(currencies.userId, fromUserId.toString()));
 
         // Add to receiver
         const receiverCurrencies = await this.getCurrencies(toUserId);
