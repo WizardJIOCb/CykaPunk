@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cykapunk-postgres
+    environment:
+      POSTGRES_DB: cykapunk
+      POSTGRES_USER: cykapunk_user
+      POSTGRES_PASSWORD: cykapunk_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - cykapunk-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cykapunk-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@cykapunk.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - cykapunk-network
+
+volumes:
+  postgres_data:
+
+networks:
+  cykapunk-network:
+    driver: bridge

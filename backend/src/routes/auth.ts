@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { generateToken } from '../middleware/auth';
+import { UserService, UserRegistrationData, UserLoginData } from '../services/userService';
 
 const router = express.Router();
 
@@ -37,46 +37,41 @@ router.get('/twitter/callback',
   }
 );
 
-// Local login (for development/testing)
-router.post('/login', (req, res) => {
-  // In a real app, this would validate credentials against the database
-  const { username, password } = req.body;
-  
-  if (username && password) {
-    // Mock user
-    const user = {
-      id: '1',
-      username,
-      email: `${username}@example.com`,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+// Local login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
     
-    const token = generateToken(user);
-    res.json({ token, user });
-  } else {
-    res.status(400).json({ error: 'Username and password required' });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+    
+    const loginData: UserLoginData = { email, password };
+    const result = await UserService.login(loginData);
+    
+    const token = UserService.generateToken(result.user.id.toString());
+    res.json({ token, user: result.user, character: result.character });
+  } catch (error) {
+    res.status(401).json({ error: error instanceof Error ? error.message : 'Login failed' });
   }
 });
 
 // Registration endpoint
-router.post('/register', (req, res) => {
-  const { username, email, password } = req.body;
-  
-  if (username && email && password) {
-    // Mock user creation
-    const user = {
-      id: '2',
-      username,
-      email,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
     
-    const token = generateToken(user);
-    res.json({ token, user });
-  } else {
-    res.status(400).json({ error: 'Username, email, and password required' });
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Username, email, and password required' });
+    }
+    
+    const registrationData: UserRegistrationData = { username, email, password };
+    const result = await UserService.register(registrationData);
+    
+    const token = UserService.generateToken(result.user.id.toString());
+    res.json({ token, user: result.user, character: result.character });
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Registration failed' });
   }
 });
 

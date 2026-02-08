@@ -41,6 +41,9 @@ git clone https://github.com/WizardJIOCb/CykaPunk .
 cd frontend
 npm install
 npm run build
+cd..
+mkdir -p dist
+cp -r frontend/dist/* dist/
 ```
 
 ### 5. Configure Nginx
