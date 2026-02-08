@@ -1,4 +1,4 @@
-// Copy of shared types for backend build compatibility
+// Minimal shared types for backend build compatibility
 export type User = {
   id: string;
   username: string;
@@ -29,23 +29,16 @@ export type Item = {
   id: string;
   name: string;
   description: string;
-  type: ItemType;
-  slot?: EquipmentSlot;
+  type: string;
+  slot?: string;
   rarity: number;
   value: number;
   price?: number;
-  currencyType?: CurrencyType;
+  currencyType?: string;
   effects: Record<string, any>;
   stats?: Record<string, number>;
   createdAt: Date;
 };
-
-export enum ItemType {
-  WEAPON = 'weapon',
-  ARMOR = 'armor',
-  CONSUMABLE = 'consumable',
-  MATERIAL = 'material'
-}
 
 export type InventoryItem = {
   id: string;
@@ -67,21 +60,6 @@ export type Currency = {
   updatedAt: Date;
 };
 
-export enum CurrencyType {
-  SOFT = 'soft',
-  HARD = 'hard',
-  UPGRADE = 'upgrade'
-}
-
-export enum EquipmentSlot {
-  RIGHT_HAND = 'weapon',
-  HELMET = 'helmet',
-  TORSO = 'chest',
-  LEGS = 'legs',
-  BOOTS = 'boots',
-  ACCESSORY = 'accessory'
-}
-
 export type ChatMessage = {
   id: string;
   senderId: string;
@@ -91,20 +69,8 @@ export type ChatMessage = {
   username: string;
   content: string;
   timestamp: Date;
-  messageType: MessageType;
+  messageType: string;
 };
-
-export enum ChatChannel {
-  GLOBAL = 'global',
-  GUILD = 'guild',
-  PRIVATE = 'private'
-}
-
-export enum MessageType {
-  TEXT = 'text',
-  SYSTEM = 'system',
-  BATTLE = 'battle'
-}
 
 export type OnlinePlayer = {
   id: string;
@@ -121,25 +87,19 @@ export type Battle = {
   id: string;
   attackerId: string;
   defenderId: string;
-  mode: BattleMode;
-  result?: BattleResult;
+  mode: string;
+  result?: any;
   rewards?: any;
   startedAt: Date;
   endedAt?: Date;
 };
-
-export enum BattleMode {
-  PVP = 'pvp',
-  PVE = 'pve',
-  BOSS = 'boss'
-}
 
 export type BattleResult = {
   battleId: string;
   winnerId?: string;
   loserId?: string;
   rewards: Array<{
-    currencyType?: CurrencyType;
+    currencyType?: string;
     itemId?: string;
     amount: number;
   }>;
@@ -150,6 +110,6 @@ export type BattleResult = {
 export type PlayerBattleRequest = {
   playerId: string;
   targetPlayerId: string;
-  mode: BattleMode;
+  mode: string;
   timestamp: Date;
 };
