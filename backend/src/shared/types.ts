@@ -14,6 +14,8 @@ export type BattleMode = string;
 export type CurrencyType = string;
 export type ChatChannel = string;
 export type MessageType = string;
+export type ItemType = string;
+export type EquipmentSlot = string;
 
 export type Character = {
   id: string;

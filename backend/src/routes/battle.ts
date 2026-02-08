@@ -22,7 +22,7 @@ router.post('/pvp', authenticateToken, (req, res) => {
     battleId: 'battle_1',
     winnerId: userId,
     rewards: [
-      { currencyType: CurrencyType.SOFT, amount: 50 },
+      { currencyType: 'soft', amount: 50 },
       { itemId: 'item_1', amount: 1 }
     ],
     experienceGained: 100
@@ -42,7 +42,7 @@ router.post('/boss/:bossId', authenticateToken, (req, res) => {
     battleId: `boss_battle_${bossId}`,
     winnerId: userId,
     rewards: [
-      { currencyType: CurrencyType.HARD, amount: 25 },
+      { currencyType: 'hard', amount: 25 },
       { itemId: 'item_4', amount: 1 }
     ],
     experienceGained: 150

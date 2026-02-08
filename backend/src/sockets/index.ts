@@ -20,6 +20,7 @@ export const setupSocketIO = (io: Server) => {
     socket.on('join-game', (userData) => {
       const newPlayer: OnlinePlayer = {
         id: userData.id || socket.id,
+        userId: userData.id || socket.id,
         username: userData.username || `Player_${socket.id.substring(0, 4)}`,
         isConnected: true,
         lastSeen: new Date(),
@@ -41,9 +42,11 @@ export const setupSocketIO = (io: Server) => {
         senderId: data.senderId,
         senderName: data.senderName,
         channelId: data.channelId,
+        userId: data.senderId,
+        username: data.senderName,
         content: data.content,
         timestamp: new Date(),
-        messageType: MessageType.TEXT
+        messageType: 'text'
       };
 
       // Broadcast message to appropriate channel
@@ -68,10 +71,12 @@ export const setupSocketIO = (io: Server) => {
         id: `priv_msg_${Date.now()}_${socket.id}`,
         senderId: data.senderId,
         senderName: data.senderName,
-        channelId: ChatChannel.PRIVATE,
+        channelId: 'private',
+        userId: data.senderId,
+        username: data.senderName,
         content: data.content,
         timestamp: new Date(),
-        messageType: MessageType.TEXT
+        messageType: 'text'
       };
 
       // In a real implementation, you'd look up the recipient's socket ID

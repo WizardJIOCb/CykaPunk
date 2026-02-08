@@ -15,18 +15,22 @@ router.get('/history/:channel', authenticateToken, (req, res) => {
       senderId: 'user_1',
       senderName: 'Player1',
       channelId: channel as ChatChannel,
+      userId: 'user_1',
+      username: 'Player1',
       content: 'Hello everyone!',
       timestamp: new Date(Date.now() - 300000),
-      messageType: MessageType.TEXT
+      messageType: 'text'
     },
     {
       id: 'msg_2',
       senderId: 'user_2',
       senderName: 'Player2',
       channelId: channel as ChatChannel,
+      userId: 'user_2',
+      username: 'Player2',
       content: 'Hi there!',
       timestamp: new Date(Date.now() - 240000),
-      messageType: MessageType.TEXT
+      messageType: 'text'
     }
   ];
   
@@ -44,9 +48,11 @@ router.post('/send', authenticateToken, (req, res) => {
     senderId: user.id,
     senderName: user.username,
     channelId: channelId as ChatChannel,
+    userId: user.id,
+    username: user.username,
     content,
     timestamp: new Date(),
-    messageType: MessageType.TEXT
+    messageType: 'text'
   };
   
   res.json({ message, success: true });
@@ -58,6 +64,7 @@ router.get('/online', authenticateToken, (req, res) => {
   const onlinePlayers: OnlinePlayer[] = [
     {
       id: 'user_1',
+      userId: 'user_1',
       username: 'Player1',
       isConnected: true,
       lastSeen: new Date(),
@@ -65,6 +72,7 @@ router.get('/online', authenticateToken, (req, res) => {
     },
     {
       id: 'user_2',
+      userId: 'user_2',
       username: 'Player2',
       isConnected: true,
       lastSeen: new Date(),
@@ -95,10 +103,12 @@ router.post('/private', authenticateToken, (req, res) => {
     id: `priv_msg_${Date.now()}`,
     senderId: user.id,
     senderName: user.username,
-    channelId: ChatChannel.PRIVATE,
+    channelId: 'private',
+    userId: user.id,
+    username: user.username,
     content,
     timestamp: new Date(),
-    messageType: MessageType.TEXT
+    messageType: 'text'
   };
   
   res.json({ message, success: true, recipientId });

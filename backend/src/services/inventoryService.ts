@@ -19,13 +19,16 @@ export class InventoryService {
           updatedAt: inventory.updatedAt
         })
         .from(inventory)
-        .where(eq(inventory.userId, userId));
+        .where(eq(inventory.userId, userId.toString()));
 
       return result.map(item => ({
         id: item.id.toString(),
+        userId: userId.toString(),
         itemId: item.itemId.toString(),
         quantity: item.quantity,
-        equipped: item.equipped
+        equipped: item.equipped,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
       }));
     } catch (error) {
       console.error('Error getting user inventory:', error);
@@ -43,7 +46,7 @@ export class InventoryService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -56,7 +59,7 @@ export class InventoryService {
             updatedAt: new Date()
           })
           .where(and(
-            eq(inventory.userId, userId),
+            eq(inventory.userId, userId.toString()),
             eq(inventory.itemId, itemId)
           ));
       } else {
@@ -64,7 +67,7 @@ export class InventoryService {
         await db
           .insert(inventory)
           .values({
-            userId,
+            userId: userId.toString(),
             itemId,
             quantity
           });
@@ -86,7 +89,7 @@ export class InventoryService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -104,7 +107,7 @@ export class InventoryService {
         await db
           .delete(inventory)
           .where(and(
-            eq(inventory.userId, userId),
+            eq(inventory.userId, userId.toString()),
             eq(inventory.itemId, itemId)
           ));
       } else {
@@ -116,7 +119,7 @@ export class InventoryService {
             updatedAt: new Date()
           })
           .where(and(
-            eq(inventory.userId, userId),
+            eq(inventory.userId, userId.toString()),
             eq(inventory.itemId, itemId)
           ));
       }
@@ -138,7 +141,7 @@ export class InventoryService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -154,7 +157,7 @@ export class InventoryService {
           updatedAt: new Date()
         })
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -175,7 +178,7 @@ export class InventoryService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId),
           eq(inventory.equipped, true)
         ));
@@ -192,7 +195,7 @@ export class InventoryService {
           updatedAt: new Date()
         })
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -219,15 +222,18 @@ export class InventoryService {
         })
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.equipped, true)
         ));
 
       return result.map(item => ({
         id: item.id.toString(),
+        userId: userId.toString(),
         itemId: item.itemId.toString(),
         quantity: item.quantity,
-        equipped: item.equipped
+        equipped: item.equipped,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
       }));
     } catch (error) {
       console.error('Error getting equipped items:', error);

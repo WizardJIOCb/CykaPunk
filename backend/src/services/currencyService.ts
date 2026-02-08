@@ -31,7 +31,9 @@ export class CurrencyService {
           userId: newCurrency.userId.toString(),
           softCurrency: newCurrency.softCurrency,
           hardCurrency: newCurrency.hardCurrency,
-          upgradeCurrency: newCurrency.upgradeCurrency
+          upgradeCurrency: newCurrency.upgradeCurrency,
+          createdAt: new Date(),
+          updatedAt: new Date()
         };
       }
 
@@ -41,7 +43,9 @@ export class CurrencyService {
         userId: currency.userId.toString(),
         softCurrency: currency.softCurrency,
         hardCurrency: currency.hardCurrency,
-        upgradeCurrency: currency.upgradeCurrency
+        upgradeCurrency: currency.upgradeCurrency,
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
     } catch (error) {
       console.error('Error getting currencies:', error);
@@ -52,7 +56,7 @@ export class CurrencyService {
   /**
    * Update user's currencies
    */
-  static async updateCurrencies(userId: number, updates: Partial<{ softCurrency: number; hardCurrency: number; upgradeCurrency: number }>): Promise<Currency> {
+  static async updateCurrencies(userId: string, updates: Partial<{ softCurrency: number; hardCurrency: number; upgradeCurrency: number }>): Promise<Currency> {
     try {
       const [updatedCurrency] = await db
         .update(currencies)
@@ -70,7 +74,9 @@ export class CurrencyService {
         userId: updatedCurrency.userId.toString(),
         softCurrency: updatedCurrency.softCurrency,
         hardCurrency: updatedCurrency.hardCurrency,
-        upgradeCurrency: updatedCurrency.upgradeCurrency
+        upgradeCurrency: updatedCurrency.upgradeCurrency,
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
     } catch (error) {
       console.error('Error updating currencies:', error);
@@ -92,19 +98,19 @@ export class CurrencyService {
       let newUpgrade = currentCurrencies.upgradeCurrency;
       
       switch (currencyType) {
-        case CurrencyType.SOFT:
+        case 'soft':
           newSoft += amount;
           break;
-        case CurrencyType.HARD:
+        case 'hard':
           newHard += amount;
           break;
-        case CurrencyType.UPGRADE:
+        case 'upgrade':
           newUpgrade += amount;
           break;
       }
 
       // Update currencies
-      return await this.updateCurrencies(userId, {
+      return await this.updateCurrencies(userId.toString(), {
         softCurrency: newSoft,
         hardCurrency: newHard,
         upgradeCurrency: newUpgrade
@@ -124,13 +130,13 @@ export class CurrencyService {
 
       let canSpend = false;
       switch (currencyType) {
-        case CurrencyType.SOFT:
+        case 'soft':
           canSpend = currentCurrencies.softCurrency >= amount;
           break;
-        case CurrencyType.HARD:
+        case 'hard':
           canSpend = currentCurrencies.hardCurrency >= amount;
           break;
-        case CurrencyType.UPGRADE:
+        case 'upgrade':
           canSpend = currentCurrencies.upgradeCurrency >= amount;
           break;
       }
@@ -145,13 +151,13 @@ export class CurrencyService {
       let newUpgrade = currentCurrencies.upgradeCurrency;
       
       switch (currencyType) {
-        case CurrencyType.SOFT:
+        case 'soft':
           newSoft -= amount;
           break;
-        case CurrencyType.HARD:
+        case 'hard':
           newHard -= amount;
           break;
-        case CurrencyType.UPGRADE:
+        case 'upgrade':
           newUpgrade -= amount;
           break;
       }
@@ -174,17 +180,17 @@ export class CurrencyService {
   static async transferCurrency(fromUserId: number, toUserId: number, currencyType: CurrencyType, amount: number): Promise<boolean> {
     try {
       // Check if sender has enough currency
-      const senderCurrencies = await this.getCurrencies(fromUserId);
+      const senderCurrencies = await this.getCurrencies(fromUserId.toString());
 
       let hasEnough = false;
       switch (currencyType) {
-        case CurrencyType.SOFT:
+        case 'soft':
           hasEnough = senderCurrencies.softCurrency >= amount;
           break;
-        case CurrencyType.HARD:
+        case 'hard':
           hasEnough = senderCurrencies.hardCurrency >= amount;
           break;
-        case CurrencyType.UPGRADE:
+        case 'upgrade':
           hasEnough = senderCurrencies.upgradeCurrency >= amount;
           break;
       }
@@ -201,13 +207,13 @@ export class CurrencyService {
         let senderUpgrade = senderCurrencies.upgradeCurrency;
         
         switch (currencyType) {
-          case CurrencyType.SOFT:
+          case 'soft':
             senderSoft -= amount;
             break;
-          case CurrencyType.HARD:
+          case 'hard':
             senderHard -= amount;
             break;
-          case CurrencyType.UPGRADE:
+          case 'upgrade':
             senderUpgrade -= amount;
             break;
         }
@@ -220,19 +226,19 @@ export class CurrencyService {
         }).where(eq(currencies.userId, fromUserId.toString()));
 
         // Add to receiver
-        const receiverCurrencies = await this.getCurrencies(toUserId);
+        const receiverCurrencies = await this.getCurrencies(toUserId.toString());
         let receiverSoft = receiverCurrencies.softCurrency;
         let receiverHard = receiverCurrencies.hardCurrency;
         let receiverUpgrade = receiverCurrencies.upgradeCurrency;
         
         switch (currencyType) {
-          case CurrencyType.SOFT:
+          case 'soft':
             receiverSoft += amount;
             break;
-          case CurrencyType.HARD:
+          case 'hard':
             receiverHard += amount;
             break;
-          case CurrencyType.UPGRADE:
+          case 'upgrade':
             receiverUpgrade += amount;
             break;
         }
@@ -242,7 +248,7 @@ export class CurrencyService {
           hardCurrency: receiverHard,
           upgradeCurrency: receiverUpgrade,
           updatedAt: new Date()
-        }).where(eq(currencies.userId, toUserId));
+        }).where(eq(currencies.userId, toUserId.toString()));
       });
 
       return true;

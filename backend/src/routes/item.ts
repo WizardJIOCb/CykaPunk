@@ -12,44 +12,56 @@ router.get('/', authenticateToken, (req, res) => {
       id: 'item_1',
       name: 'Basic Sword',
       description: 'A basic sword for beginners',
-      type: ItemType.WEAPON,
-      slot: EquipmentSlot.RIGHT_HAND,
+      type: 'weapon',
+      slot: 'weapon',
       stats: { attack: 5 },
+      value: 10,
       price: 50,
-      currencyType: CurrencyType.SOFT,
-      rarity: 1
+      currencyType: 'soft',
+      effects: {},
+      rarity: 1,
+      createdAt: new Date()
     },
     {
       id: 'item_2',
       name: 'Leather Armor',
       description: 'Light armor for protection',
-      type: ItemType.ARMOR,
-      slot: EquipmentSlot.TORSO,
+      type: 'armor',
+      slot: 'chest',
       stats: { defense: 3 },
+      value: 15,
       price: 75,
-      currencyType: CurrencyType.SOFT,
-      rarity: 1
+      currencyType: 'soft',
+      effects: {},
+      rarity: 1,
+      createdAt: new Date()
     },
     {
       id: 'item_3',
       name: 'Health Potion',
       description: 'Restores 50 HP',
-      type: ItemType.CONSUMABLE,
+      type: 'consumable',
       stats: { health: 50 },
+      value: 5,
       price: 25,
-      currencyType: CurrencyType.SOFT,
-      rarity: 1
+      currencyType: 'soft',
+      effects: {},
+      rarity: 1,
+      createdAt: new Date()
     },
     {
       id: 'item_4',
       name: 'Advanced Blade',
       description: 'A sharp blade for experienced fighters',
-      type: ItemType.WEAPON,
-      slot: EquipmentSlot.RIGHT_HAND,
+      type: 'weapon',
+      slot: 'weapon',
       stats: { attack: 12 },
+      value: 20,
       price: 200,
-      currencyType: CurrencyType.HARD,
-      rarity: 2
+      currencyType: 'hard',
+      effects: {},
+      rarity: 2,
+      createdAt: new Date()
     }
   ];
   
