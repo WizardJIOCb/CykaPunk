@@ -10,6 +10,11 @@ export type User = {
   updatedAt: Date;
 };
 
+export type BattleMode = string;
+export type CurrencyType = string;
+export type ChatChannel = string;
+export type MessageType = string;
+
 export type Character = {
   id: string;
   userId: string;
@@ -64,12 +69,12 @@ export type ChatMessage = {
   id: string;
   senderId: string;
   senderName?: string;
-  channelId: string;
+  channelId: ChatChannel;
   userId: string;
   username: string;
   content: string;
   timestamp: Date;
-  messageType: string;
+  messageType: MessageType;
 };
 
 export type OnlinePlayer = {
@@ -87,7 +92,7 @@ export type Battle = {
   id: string;
   attackerId: string;
   defenderId: string;
-  mode: string;
+  mode: BattleMode;
   result?: any;
   rewards?: any;
   startedAt: Date;
@@ -99,7 +104,7 @@ export type BattleResult = {
   winnerId?: string;
   loserId?: string;
   rewards: Array<{
-    currencyType?: string;
+    currencyType?: CurrencyType;
     itemId?: string;
     amount: number;
   }>;
