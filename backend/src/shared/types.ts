@@ -30,9 +30,11 @@ export type Item = {
   name: string;
   description: string;
   type: ItemType;
+  slot?: EquipmentSlot;
   rarity: number;
   value: number;
   effects: Record<string, any>;
+  stats?: Record<string, number>;
   createdAt: Date;
 };
 
@@ -44,9 +46,9 @@ export enum ItemType {
 }
 
 export type InventoryItem = {
-  id: number;
+  id: string;
   userId: string;
-  itemId: number;
+  itemId: string;
   quantity: number;
   equipped: boolean;
   createdAt: Date;
@@ -81,6 +83,7 @@ export enum EquipmentSlot {
 export type ChatMessage = {
   id: string;
   senderId: string;
+  senderName?: string;
   channelId: string;
   userId: string;
   username: string;
@@ -89,12 +92,7 @@ export type ChatMessage = {
   type: MessageType;
 };
 
-export type ChatChannel = {
-  id: string;
-  name: string;
-  type: 'global' | 'guild' | 'private';
-  createdAt: Date;
-};
+export type ChatChannel = 'global' | 'guild' | 'private';
 
 export enum MessageType {
   TEXT = 'text',
@@ -109,6 +107,7 @@ export type OnlinePlayer = {
   characterName?: string;
   level?: number;
   lastSeen: Date;
+  isConnected?: boolean;
 };
 
 export type Battle = {
