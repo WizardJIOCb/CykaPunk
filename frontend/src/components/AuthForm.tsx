@@ -20,7 +20,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
     setError('');
 
     try {
-      const url = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const baseUrl = 'http://localhost:3001';
+      const url = isLogin ? `${baseUrl}/api/auth/login` : `${baseUrl}/api/auth/register`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -55,83 +56,118 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="auth-form-container">
-      <div className="pad">
+    <div className="auth-form-wrapper">
+      <div className="pad auth-pad">
         <div className="pad__body">
-          <h3 className="text-heading3">{isLogin ? 'Login' : 'Register'}</h3>
+          <h3 className="text-heading3 auth-title">
+            {isLogin ? 'SYSTEM LOGIN' : 'CREATE ACCOUNT'}
+          </h3>
           
+          <div className="auth-subtitle">
+            {isLogin 
+              ? 'ACCESS YOUR CYBERNETIC PROFILE' 
+              : 'INITIALIZE NEW NETRUNNER IDENTITY'}
+          </div>
+
           {error && (
-            <div className="message__body" style={{ borderColor: '#fed33f', color: '#fed33f', marginBottom: '1rem' }}>
-              {error}
+            <div className="message__body auth-error">
+              <div className="auth-error-content">
+                <span className="auth-error-icon">⚠</span>
+                <span>{error}</span>
+              </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="auth-form">
             {!isLogin && (
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label className="form-label" htmlFor="username">Username</label>
-                <div className="form-control">
+              <div className="form-group auth-form-group">
+                <label className="form-label auth-label" htmlFor="username">USERNAME</label>
+                <div className="form-control auth-input">
                   <input
                     id="username"
                     name="username"
                     type="text"
                     value={formData.username}
                     onChange={handleChange}
-                    placeholder="Enter username"
+                    placeholder="ENTER_CALLSIGN"
                     required={!isLogin}
+                    className="auth-input-field"
                   />
                 </div>
               </div>
             )}
             
-            <div className="form-group" style={{ marginBottom: '1rem' }}>
-              <label className="form-label" htmlFor="email">Email</label>
-              <div className="form-control">
+            <div className="form-group auth-form-group">
+              <label className="form-label auth-label" htmlFor="email">EMAIL ADDRESS</label>
+              <div className="form-control auth-input">
                 <input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter email"
+                  placeholder="USER@CYKAPUNK.NET"
                   required
+                  className="auth-input-field"
                 />
               </div>
             </div>
             
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label className="form-label" htmlFor="password">Password</label>
-              <div className="form-control">
+            <div className="form-group auth-form-group">
+              <label className="form-label auth-label" htmlFor="password">ACCESS CODE</label>
+              <div className="form-control auth-input">
                 <input
                   id="password"
                   name="password"
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter password"
+                  placeholder="••••••••••••"
                   required
+                  className="auth-input-field"
                 />
               </div>
             </div>
             
             <button 
-              className="button button--primary" 
+              className={`button button--primary auth-submit ${loading ? 'auth-loading' : ''}`}
               type="submit" 
               disabled={loading}
-              style={{ width: '100%', marginBottom: '1rem' }}
             >
-              {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
+              <span className="button__content">
+                {loading ? (
+                  <>
+                    <span className="auth-loading-spinner"></span>
+                    PROCESSING
+                  </>
+                ) : (
+                  isLogin ? 'ACCESS SYSTEM' : 'INITIALIZE PROFILE'
+                )}
+              </span>
             </button>
           </form>
           
-          <div className="text-paragraph1" style={{ textAlign: 'center' }}>
+          <div className="auth-toggle">
             <button 
-              className="button" 
+              className="button auth-toggle-button" 
               onClick={() => setIsLogin(!isLogin)}
-              style={{ border: 'none', background: 'transparent', color: '#2be4ea', textDecoration: 'underline' }}
+              type="button"
             >
-              {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
+              <span className="button__content">
+                {isLogin ? 'CREATE NEW IDENTITY' : 'RETURN TO LOGIN'}
+              </span>
             </button>
+          </div>
+          
+          <div className="auth-info">
+            <div className="auth-info-item">
+              <span className="auth-info-label">STATUS:</span>
+              <span className="auth-info-value">SECURE_CONNECTION_ESTABLISHED</span>
+            </div>
+            <div className="auth-info-item">
+              <span className="auth-info-label">PROTOCOL:</span>
+              <span className="auth-info-value">NETWIRE_AUTH_V2</span>
+            </div>
           </div>
         </div>
       </div>

@@ -6,9 +6,9 @@ import { Server } from 'socket.io';
 import winston from 'winston';
 import dotenv from 'dotenv';
 
-import { setupAuth } from './middleware/auth';
+// import { setupAuth } from './middleware/auth';
 import { setupRoutes } from './routes';
-import { setupSocketIO } from './sockets';
+// import { setupSocketIO } from './sockets';
 
 // Load environment variables
 dotenv.config();
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Setup authentication
-setupAuth(app);
+// setupAuth(app);
 
 // Setup routes
 setupRoutes(app);
@@ -66,7 +66,7 @@ const io = new Server(server, {
   }
 });
 
-setupSocketIO(io);
+// setupSocketIO(io);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

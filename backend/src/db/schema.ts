@@ -1,16 +1,14 @@
-import { pgTable, serial, text, integer, timestamp, boolean, jsonb, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, integer, timestamp, boolean, jsonb, varchar, bigint, serial } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  username: text('username').notNull().unique(),
+  id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
-  passwordHash: text('password_hash'), // For local authentication
-  googleId: text('google_id').unique(), // For OAuth
-  discordId: text('discord_id').unique(), // For OAuth
-  twitterId: text('twitter_id').unique(), // For OAuth
+  username: text('username').notNull().unique(),
+  passwordHash: text('password_hash'),
   avatarUrl: text('avatar_url'),
+  isGuest: boolean('is_guest').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -18,7 +16,7 @@ export const users = pgTable('users', {
 // Characters table
 export const characters = pgTable('characters', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   level: integer('level').default(1).notNull(),
   experience: integer('experience').default(0).notNull(),
@@ -48,7 +46,7 @@ export const items = pgTable('items', {
 // Inventory table
 export const inventory = pgTable('inventory', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
   quantity: integer('quantity').default(1).notNull(),
   equipped: boolean('equipped').default(false).notNull(),
@@ -59,7 +57,7 @@ export const inventory = pgTable('inventory', {
 // Currency table
 export const currencies = pgTable('currencies', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   softCurrency: integer('soft_currency').default(0).notNull(),
   hardCurrency: integer('hard_currency').default(0).notNull(),
   upgradeCurrency: integer('upgrade_currency').default(0).notNull(),
@@ -69,9 +67,9 @@ export const currencies = pgTable('currencies', {
 // Battles table
 export const battles = pgTable('battles', {
   id: serial('id').primaryKey(),
-  player1Id: integer('player1_id').notNull().references(() => users.id),
-  player2Id: integer('player2_id').notNull().references(() => users.id),
-  winnerId: integer('winner_id').notNull().references(() => users.id),
+  player1Id: uuid('player1_id').notNull().references(() => users.id),
+  player2Id: uuid('player2_id').notNull().references(() => users.id),
+  winnerId: uuid('winner_id').notNull().references(() => users.id),
   battleLog: jsonb('battle_log').notNull(), // Stores the full battle log
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -79,7 +77,7 @@ export const battles = pgTable('battles', {
 // Chat messages table
 export const chatMessages = pgTable('chat_messages', {
   id: serial('id').primaryKey(),
-  senderId: integer('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  senderId: uuid('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   senderName: text('sender_name').notNull(),
   channelId: text('channel_id').notNull(), // general, trade, location, private
   content: text('content').notNull(),
@@ -100,7 +98,7 @@ export const bosses = pgTable('bosses', {
   speed: integer('speed').notNull(),
   rewards: jsonb('rewards').notNull(), // Array of reward objects
   unlocked: boolean('unlocked').default(false).notNull(),
-  defeatedBy: integer('defeated_by').references(() => users.id), // UserId of first player to defeat this boss
+  defeatedBy: uuid('defeated_by').references(() => users.id), // UserId of first player to defeat this boss
   defeatedAt: timestamp('defeated_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

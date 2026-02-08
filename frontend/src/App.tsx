@@ -1,7 +1,9 @@
-import { Route, Switch } from 'wouter';
+import { Route, Switch, useLocation } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 
 import './App.css';
+import { AuthForm } from './components/AuthForm';
 import { CharacterScreen } from './pages/CharacterScreen';
 import { LocationScreen } from './pages/LocationScreen';
 import { ShopScreen } from './pages/ShopScreen';
@@ -10,6 +12,114 @@ import { BattleScreen } from './pages/BattleScreen';
 const queryClient = new QueryClient();
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [character, setCharacter] = useState<any>(null);
+  const [, setLocation] = useLocation();
+  
+  // AUTHENTICATION DEBUG MODE - FORCE LOGIN SCREEN
+  console.log('AUTH_DEBUG: App mounted, isAuthenticated:', isAuthenticated);
+  console.log('AUTH_DEBUG: This should show login screen!');
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    console.log('Token found:', token);
+    
+    if (token) {
+      // Verify token with backend
+      fetch('http://localhost:3001/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        console.log('Verify response status:', response.status);
+        if (response.ok) {
+          return response.json();
+        } else {
+          // Token invalid, logout
+          console.log('Token invalid, logging out');
+          handleLogout();
+          throw new Error('Invalid token');
+        }
+      })
+      .then(data => {
+        console.log('Verify success, setting authenticated');
+        setIsAuthenticated(true);
+        setUser(data.user);
+        setCharacter(data.character);
+        // Save updated user data
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('character', JSON.stringify(data.character));
+      })
+      .catch(error => {
+        console.log('Token verification failed:', error);
+        // Already handled in the response check
+      });
+    } else {
+      console.log('No token found, showing auth screen');
+      // Ensure we're not authenticated if no token
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  const handleAuthSuccess = (_token: string, userData: any, characterData: any) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    setCharacter(characterData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('character', JSON.stringify(characterData));
+    setLocation('/');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    setCharacter(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('character');
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <div className="app-skeleton auth-layout">
+          <header className="app-header auth-header">
+            <div className="app-header__anchor">
+              <span className="app-header__anchor__text">
+                CykaPunk - NetWire
+              </span>
+            </div>
+            <nav>
+              <ul className="nav">
+                <li className="nav__item"><span className="nav__link nav__link--active"><span className="nav__link__element">Authentication</span></span></li>
+              </ul>
+            </nav>
+          </header>
+          
+          <div className="auth-container">
+            <div className="auth-main">
+              <div className="channel-feed">
+                <div className="segment-topbar">
+                  <div className="segment-topbar__header">
+                    <span className="segment-topbar__overline">NetWire_Seed: d869db7fe62fb07c25a0403ecaea55031744b5fb</span>
+                    <h4 className="segment-topbar__title">System Access</h4>
+                  </div>
+                </div>
+                
+                <div className="channel-feed__body auth-body">
+                  <AuthForm onAuthSuccess={handleAuthSuccess} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="app-skeleton">
@@ -27,6 +137,15 @@ function App() {
               <li className="nav__item"><a className="nav__link" href="#/shop"><span className="nav__link__element">Shop</span></a></li>
               <li className="nav__item"><a className="nav__link" href="#/map"><span className="nav__link__element">Map</span></a></li>
               <li className="nav__item"><a className="nav__link" href="#/files"><span className="nav__link__element">Files</span></a></li>
+              <li className="nav__item">
+                <a 
+                  className="nav__link" 
+                  onClick={handleLogout}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span className="nav__link__element">Logout</span>
+                </a>
+              </li>
             </ul>
           </nav>
         </header>
@@ -135,23 +254,11 @@ function App() {
 
               <div className="channel-feed__body">
                 <Switch>
-                  <Route path="/character">
-                    <CharacterScreen />
-                  </Route>
-                  <Route path="/location">
-                    <LocationScreen />
-                  </Route>
-                  <Route path="/shop">
-                    <ShopScreen />
-                  </Route>
-                  <Route path="/battles">
-                    <BattleScreen />
-                  </Route>
                   <Route path="/">
                     <div className="message">
                       <div className="message__body">
                         <div>
-                          Welcome to CykaPunk, netrunner. The year is 2077, and Night City is yours to explore. Access your character panel to begin your journey through the streets of this sprawling metropolis. Complete jobs, upgrade your gear, and become the ultimate cyber-enhanced warrior.
+                          Welcome back, {user?.username}! Your character {character?.name} is ready for action.
                         </div>
                       </div>
                       <div className="message__footer">
@@ -162,11 +269,11 @@ function App() {
                     <div className="message">
                       <div className="message__body">
                         <div>
-                          Your character has been created with basic equipment. Visit the Shop to purchase upgrades or visit the Combat Arena to test your skills against other netrunners.
+                          Level: {character?.level} | Health: {character?.health}/{character?.maxHealth || 100} | Experience: {character?.experience}
                         </div>
                       </div>
                       <div className="message__footer">
-                        <span className="message__authoring">System</span> - Just now
+                        <span className="message__authoring">Character Status</span> - Just now
                       </div>
                     </div>
                   </Route>
@@ -194,9 +301,9 @@ function App() {
             <div className="pad">
               <h4 className="text-heading3">Game Status</h4>
               <p className="text-paragraph1">
-                <strong>Level:</strong> 1<br />
-                <strong>Health:</strong> 100/100<br />
-                <strong>Stamina:</strong> 50/50<br />
+                <strong>Level:</strong> {character?.level || 1}<br />
+                <strong>Health:</strong> {character?.health || 100}/{character?.maxHealth || 100}<br />
+                <strong>Energy:</strong> {character?.energy || 100}/100<br />
                 <strong>Currency:</strong> 500 eddies
               </p>
               
@@ -205,8 +312,8 @@ function App() {
               
               <h4 className="text-heading3" style={{ marginTop: '1rem' }}>Recent Activity</h4>
               <p className="text-paragraph1">
-                Character created<br />
-                Basic equipment acquired
+                Logged in<br />
+                Character loaded
               </p>
             </div>
           </div>

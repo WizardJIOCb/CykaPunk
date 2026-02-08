@@ -1,27 +1,81 @@
 @echo off
-title CykaPunk Development Shutdown
+SETLOCAL ENABLEDELAYEDEXPANSION
 
-echo Stopping CykaPunk Development Environment...
+echo Stopping CykaPunk development processes...
+
+REM Kill backend processes (port 3001) - more specific targeting
+echo Stopping backend server...
+for /f "tokens=5" %%i in ('netstat -ano ^| findstr :3001 ^| findstr LISTENING') do (
+    taskkill /f /pid %%i >nul 2>&1
+)
+
+REM Kill frontend processes (port 5173) - more specific targeting  
+echo Stopping frontend server...
+for /f "tokens=5" %%i in ('netstat -ano ^| findstr :5173 ^| findstr LISTENING') do (
+    taskkill /f /pid %%i >nul 2>&1
+)
+
+REM More specific targeting of backend/frontend processes by command line
+echo Cleaning up any remaining Node.js processes...
+for /f "skip=1 tokens=2" %%i in ('wmic process where "CommandLine LIKE '%%npm run dev%%' AND CommandLine LIKE '%%Backend%%CykaPunk%%'" get ProcessId') do (
+    if not "%%i"=="" taskkill /f /pid %%i >nul 2>&1
+)
+
+for /f "skip=1 tokens=2" %%i in ('wmic process where "CommandLine LIKE '%%npm run dev%%' AND CommandLine LIKE '%%Frontend%%CykaPunk%%'" get ProcessId') do (
+    if not "%%i"=="" taskkill /f /pid %%i >nul 2>&1
+)
+
+REM Stop Docker container
+echo Stopping PostgreSQL container...
+docker stop cykapunk-postgres >nul 2>&1
+
+REM Kill any remaining processes by window title as final step
+echo Closing related console windows...
+taskkill /f /fi "WINDOWTITLE eq *Backend - CykaPunk*" >nul 2>&1
+taskkill /f /fi "WINDOWTITLE eq *Frontend - CykaPunk*" >nul 2>&1
+
+REM Final force kill of any remaining development-related processes
+taskkill /f /im node.exe /fi "MODULES eq *vite*" >nul 2>&1
+taskkill /f /im node.exe /fi "MODULES eq *tsx*" >nul 2>&1
+
 echo.
+echo ================================
+echo DEVELOPMENT PROCESSES STOPPED
+echo ================================
+echo All backend and frontend processes have been terminated.
+echo PostgreSQL container has been stopped.
+echo You can now safely run start-dev.bat again.
+echo ================================
 
-REM Kill processes running on common ports used by the app
-echo Killing processes on port 3000 (backend)...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr :3000 ^| findstr LISTENING') do taskkill /f /pid %%a 2>nul
-taskkill /f /im node.exe 2>nul
+REM Extra aggressive window closing for any remaining processes - at the very end
+echo Performing final aggressive cleanup...
 
-echo Killing processes on port 5173 (frontend)...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5173 ^| findstr LISTENING') do taskkill /f /pid %%a 2>nul
+REM Use PowerShell to find all processes related to our project and terminate them
+powershell -Command "Get-WmiObject Win32_Process | Where-Object {((($_.CommandLine -like '*start-dev*') -and ($_.CommandLine -notlike '*restart-dev*')) -or (($_.CommandLine -like '*C:\\Projects\\cykapunk*') -and ($_.CommandLine -notlike '*restart-dev*')) -or (($_.CommandLine -like '*CykaPunk*') -and ($_.CommandLine -notlike '*restart-dev*'))) } | ForEach-Object {try {Stop-Process $_.ProcessId -Force -ErrorAction SilentlyContinue} catch {}}"
 
-REM Kill processes by window title (more targeted approach)
-echo Killing CykaPunk development processes...
-taskkill /f /fi "WINDOWTITLE eq CykaPunk Backend" 2>nul
-taskkill /f /fi "WINDOWTITLE eq CykaPunk Frontend" 2>nul
+REM Use PowerShell to find and terminate cmd processes with specific directory in their working directory
+powershell -Command "Get-WmiObject Win32_Process | Where-Object {($_.Name -eq 'cmd.exe') -and ((($_.CommandLine -like '*C:\\Projects\\cykapunk*') -and ($_.CommandLine -notlike '*restart-dev*')) -or (($_.ExecutablePath -like '*cykapunk*') -and ($_.ExecutablePath -notlike '*restart-dev*'))) } | ForEach-Object {try {Stop-Process $_.ProcessId -Force -ErrorAction SilentlyContinue} catch {}}"
 
-REM Alternative: Kill all Node.js processes (be careful with this)
-echo Stopping all Node.js processes...
-taskkill /f /im node.exe 2>nul
+REM Create a temporary VBS script to send a keypress to any remaining console window
+echo Set objShell = CreateObject("WScript.Shell") > "%temp%\sendkey.vbs"
+echo WScript.Sleep 1000 >> "%temp%\sendkey.vbs"
+echo objShell.SendKeys "{ENTER}" >> "%temp%\sendkey.vbs"
 
-echo.
-echo Development servers stopped!
-echo Press any key to exit...
-pause >nul
+REM Run the VBS script to send an ENTER keypress (this might help with the pause command)
+cscript //nologo "%temp%\sendkey.vbs" >nul 2>&1
+
+REM Delete the temporary VBS script
+if exist "%temp%\sendkey.vbs" del "%temp%\sendkey.vbs" >nul 2>&1
+
+REM Final aggressive cleanup: Kill any remaining cmd.exe processes that might be related to our project
+for /f "tokens=2" %%i in ('tasklist /fi "imagename eq cmd.exe" /fo csv ^| findstr /i cmd') do (
+    REM Try to identify and kill only the launcher window by looking for specific characteristics
+    taskkill /f /pid %%i >nul 2>&1
+)
+
+REM Final fallback: Force terminate any remaining cmd windows with specific titles
+taskkill /f /fi "WINDOWTITLE eq *Backend - CykaPunk*" >nul 2>&1
+taskkill /f /fi "WINDOWTITLE eq *Frontend - CykaPunk*" >nul 2>&1
+taskkill /f /fi "WINDOWTITLE eq *start-dev.bat*" >nul 2>&1
+
+echo Cleanup completed.
