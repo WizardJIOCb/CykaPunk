@@ -1,9 +1,7 @@
-import React from 'react';
 import { Route, Switch } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './App.css';
-import { ReferenceLayout } from './components/ReferenceLayout';
 import { CharacterScreen } from './pages/CharacterScreen';
 import { LocationScreen } from './pages/LocationScreen';
 import { ShopScreen } from './pages/ShopScreen';
