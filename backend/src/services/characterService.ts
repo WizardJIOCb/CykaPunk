@@ -229,7 +229,7 @@ export class CharacterService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId.toString())
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId),
           eq(inventory.equipped, true)
         ));
