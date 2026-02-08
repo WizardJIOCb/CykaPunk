@@ -33,6 +33,7 @@ export type Item = {
   slot?: EquipmentSlot;
   rarity: number;
   value: number;
+  price?: number;
   effects: Record<string, any>;
   stats?: Record<string, number>;
   createdAt: Date;
@@ -87,12 +88,16 @@ export type ChatMessage = {
   channelId: string;
   userId: string;
   username: string;
-  message: string;
+  content: string;
   timestamp: Date;
   type: MessageType;
 };
 
-export type ChatChannel = 'global' | 'guild' | 'private';
+export enum ChatChannel {
+  GLOBAL = 'global',
+  GUILD = 'guild',
+  PRIVATE = 'private'
+}
 
 export enum MessageType {
   TEXT = 'text',
@@ -108,6 +113,7 @@ export type OnlinePlayer = {
   level?: number;
   lastSeen: Date;
   isConnected?: boolean;
+  location?: string;
 };
 
 export type Battle = {
@@ -127,10 +133,17 @@ export enum BattleMode {
   BOSS = 'boss'
 }
 
-export enum BattleResult {
-  WIN = 'win',
-  LOSS = 'loss',
-  DRAW = 'draw'
+export type BattleResult = {
+  battleId: string;
+  winnerId?: string;
+  loserId?: string;
+  rewards: Array<{
+    currencyType?: CurrencyType;
+    itemId?: string;
+    amount: number;
+  }>;
+  experienceGained: number;
+  completedAt: Date;
 }
 
 export type PlayerBattleRequest = {
