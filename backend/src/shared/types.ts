@@ -26,7 +26,7 @@ export type Character = {
 };
 
 export type Item = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   type: ItemType;
@@ -36,7 +36,12 @@ export type Item = {
   createdAt: Date;
 };
 
-export type ItemType = 'weapon' | 'armor' | 'consumable' | 'material';
+export enum ItemType {
+  WEAPON = 'weapon',
+  ARMOR = 'armor',
+  CONSUMABLE = 'consumable',
+  MATERIAL = 'material'
+}
 
 export type InventoryItem = {
   id: number;
@@ -49,7 +54,7 @@ export type InventoryItem = {
 };
 
 export type Currency = {
-  id?: number;
+  id?: string;
   userId: string;
   softCurrency: number;
   hardCurrency: number;
@@ -58,12 +63,24 @@ export type Currency = {
   updatedAt: Date;
 };
 
-export type CurrencyType = 'soft' | 'hard' | 'upgrade';
+export enum CurrencyType {
+  SOFT = 'soft',
+  HARD = 'hard',
+  UPGRADE = 'upgrade'
+}
 
-export type EquipmentSlot = 'weapon' | 'helmet' | 'chest' | 'legs' | 'boots' | 'accessory';
+export enum EquipmentSlot {
+  RIGHT_HAND = 'weapon',
+  HELMET = 'helmet',
+  TORSO = 'chest',
+  LEGS = 'legs',
+  BOOTS = 'boots',
+  ACCESSORY = 'accessory'
+}
 
 export type ChatMessage = {
   id: string;
+  senderId: string;
   channelId: string;
   userId: string;
   username: string;
@@ -79,9 +96,14 @@ export type ChatChannel = {
   createdAt: Date;
 };
 
-export type MessageType = 'text' | 'system' | 'battle';
+export enum MessageType {
+  TEXT = 'text',
+  SYSTEM = 'system',
+  BATTLE = 'battle'
+}
 
 export type OnlinePlayer = {
+  id: string;
   userId: string;
   username: string;
   characterName?: string;
@@ -100,9 +122,17 @@ export type Battle = {
   endedAt?: Date;
 };
 
-export type BattleMode = 'pvp' | 'pve' | 'boss';
+export enum BattleMode {
+  PVP = 'pvp',
+  PVE = 'pve',
+  BOSS = 'boss'
+}
 
-export type BattleResult = 'win' | 'loss' | 'draw';
+export enum BattleResult {
+  WIN = 'win',
+  LOSS = 'loss',
+  DRAW = 'draw'
+}
 
 export type PlayerBattleRequest = {
   playerId: string;
