@@ -16,9 +16,9 @@ router.post('/login', async (req, res) => {
     const result = await UserService.login(loginData);
     
     const token = UserService.generateToken(result.user.id.toString());
-    res.json({ token, user: result.user, character: result.character });
+    return res.json({ token, user: result.user, character: result.character });
   } catch (error) {
-    res.status(401).json({ error: error instanceof Error ? error.message : 'Login failed' });
+    return res.status(401).json({ error: error instanceof Error ? error.message : 'Login failed' });
   }
 });
 
@@ -35,9 +35,9 @@ router.post('/register', async (req, res) => {
     const result = await UserService.register(registrationData);
     
     const token = UserService.generateToken(result.user.id.toString());
-    res.json({ token, user: result.user, character: result.character });
+    return res.json({ token, user: result.user, character: result.character });
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Registration failed' });
+    return res.status(400).json({ error: error instanceof Error ? error.message : 'Registration failed' });
   }
 });
 

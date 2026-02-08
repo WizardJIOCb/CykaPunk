@@ -7,7 +7,7 @@ export class CharacterService {
   /**
    * Get character by user ID
    */
-  static async getCharacterByUserId(userId: number): Promise<Character | null> {
+  static async getCharacterByUserId(userId: string): Promise<Character | null> {
     try {
       const result = await db
         .select()
@@ -42,10 +42,10 @@ export class CharacterService {
   /**
    * Create a new character for a user
    */
-  static async createCharacter(userId: number, name: string): Promise<Character> {
+  static async createCharacter(userId: string, name: string): Promise<Character> {
     try {
       // Check if user already has a character
-      const existingChar = await this.getCharacterByUserId(userId);
+      const existingChar = await this.getCharacterByUserId(userId.toString());
       if (existingChar) {
         throw new Error('User already has a character');
       }
@@ -54,7 +54,7 @@ export class CharacterService {
       const [newChar] = await db
         .insert(characters)
         .values({
-          userId,
+          userId: userId.toString(),
           name,
           level: 1,
           experience: 0,
@@ -198,7 +198,7 @@ export class CharacterService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString()),
           eq(inventory.itemId, itemId)
         ));
 
@@ -229,7 +229,7 @@ export class CharacterService {
         .select()
         .from(inventory)
         .where(and(
-          eq(inventory.userId, userId),
+          eq(inventory.userId, userId.toString())
           eq(inventory.itemId, itemId),
           eq(inventory.equipped, true)
         ));
